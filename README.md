@@ -1,5 +1,5 @@
 # $F00L.
-A CLI terminal made with C++.
+An open source CLI Terminal made with C++.
 
 # Status:
 ## Version 1.0.0 (2025. 08. 30)
