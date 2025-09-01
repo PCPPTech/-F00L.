@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string> // for `substr()` and other commands
+#include <unordered_map> // It's like a dictionary in python. There is a big difference between `unordered_map` and `map`.
 // headers
 #include "ansii_colorcodes.h"
 #include "functions.h"
@@ -13,6 +14,21 @@ Hello! Another one of my projects... i will be working on DOIT soon too, but im 
 ! AI HAS NO PART IN THIS, ALL THE CODE AND FILES WERE WRITTEN BY HAND, BY ME, PCPPTECH(EIDNOXON) !
 */
 
+//? an unordered map of color codes we will use later on, you'll see
+std::unordered_map<std::string, std::string> color_codes = {
+    {"red", red},
+    {"blue", blue},
+    {"black", black},
+    {"yellow", yellow},
+    {"brown", brown},
+    {"pink", pink},
+    {"purple", purple},
+    {"green", green},
+    {"light_green", light_green}
+};
+
+
+
 int main() {
     clearScreen();
     std::cout << "Eidnoxon (PCPPTech), 16/08/2025." << std::endl;
@@ -21,11 +37,22 @@ int main() {
     std::cout << "if you have no idea how to use this terminal, use '--help' or 'help'!" << std::endl;
     std::string command;
     std::string cmd;
+    std::string user_color = blue;
+    
     
     while(cmd != "exit" || cmd != "quit") {
+        std::ifstream file("data/wdcolor.txt"); // read from the saved working directory (current path) color in the terminal.
+        if(!file.is_open()) {
+            std::cout << yellow << "[WARNING]" << reset_color << " failed to read from data/wdcolor.txt... defaulting blue." << std::endl;
+        } else {
+            std::string temp;
+            std::getline(file, temp);
+            user_color = color_codes[temp]; // if this throws an error then the file has definitely been modified manually.
+            
+        }
         std::string wd = fs::current_path().string(); // get working directory
         // The working directory variable is inside the while loop so it will update everytime the current_path() is updated
-        std::cout << green << "[CONSOLE] " << reset_color << blue << wd << reset_color << red << "-$ " << reset_color; // no endl or \n so the input will be on the same line
+        std::cout << green << "[CONSOLE] " << reset_color << user_color << wd << reset_color << red << "-$ " << reset_color; // no endl or \n so the input will be on the same line
         getline(cin, command);
         cmd = lowerize(command);
         // forced to use if / else if since switch only works for integers and stuff not for string :c
@@ -75,7 +102,7 @@ int main() {
             } else {
                 std::cout << blue << "[INFO]" << reset_color << " Usage: touch {file_name}" << std::endl;
             }
-        } else if(cmd.starts_with("rm") && cmd.substr(0, 5) != "rmdir") {
+        } else if(cmd.starts_with("rm")) {
             if (cmd.size() > 2 && cmd.substr(3) != "") {
                 fs::path fileToRemove = command.substr(3); // path to it / file name (e.g. path/to/yourfile.txt)
                 if (fs::remove(fileToRemove)) {
@@ -141,6 +168,27 @@ int main() {
                 }
                 std::cout << "\n";
 
+            }
+        } else if(cmd.starts_with("color")) {
+            if(cmd.size() > 6) {
+                std::string color = cmd.substr(6);
+                if(color_codes.count(color) == 1) {
+                    user_color = color_codes[color];
+                    std::ofstream file("data/wdcolor.txt", std::ios::trunc);
+                    file << color;
+                } else {
+                    std::cout << "Color code invalid. Please type 'color' to see the color code list." << std::endl;
+                }
+            } else {
+                std::cout << purple << "List of available colors:" << std::endl;
+                std::cout << blue << "color blue" << std::endl;
+                std::cout << red << "color red" << std::endl;
+                std::cout << black << "color black" << std::endl;
+                std::cout << yellow << "color yellow" << std::endl;
+                std::cout << brown << "color brown" << std::endl;
+                std::cout << pink << "color pink" << std::endl;
+                std::cout << green << "color green" << std::endl;
+                std::cout << light_green << "color light_green" << reset_color << std::endl;
             }
         } else {
             std::string run_this = command + " 2>nul"; // "2>nul" tells windows to not print the error, so mine should print now.
