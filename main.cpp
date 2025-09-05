@@ -38,6 +38,7 @@ int main() {
     std::string command;
     std::string cmd;
     std::string user_color = blue;
+    std::string ctag_color = green;
     
     
     while(cmd != "exit" || cmd != "quit") {
@@ -50,9 +51,19 @@ int main() {
             user_color = color_codes[temp]; // if this throws an error then the file has definitely been modified manually.
             
         }
+
+        std::ifstream ctagcolor("data/ctagcolor.txt");
+        if(!ctagcolor.is_open()) {
+            std::cout << yellow << "[WARNING]" << reset_color << " failed to read from data/ctagcolor.txt... defaulting green." << std::endl;
+        } else {
+            std::string temp;
+            std::getline(ctagcolor, temp);
+            ctag_color = color_codes[temp];
+        }
+        
         std::string wd = fs::current_path().string(); // get working directory
         // The working directory variable is inside the while loop so it will update everytime the current_path() is updated
-        std::cout << green << "[CONSOLE] " << reset_color << user_color << wd << reset_color << red << "-$ " << reset_color; // no endl or \n so the input will be on the same line
+        std::cout << ctag_color << "[CONSOLE] " << user_color << wd << reset_color << red << "-$ " << reset_color; // no endl or \n so the input will be on the same line
         getline(cin, command);
         cmd = lowerize(command);
         // forced to use if / else if since switch only works for integers and stuff not for string :c
@@ -169,18 +180,20 @@ int main() {
                 std::cout << "\n";
 
             }
-        } else if(cmd.starts_with("color")) {
-            if(cmd.size() > 6) {
-                std::string color = cmd.substr(6);
-                if(color_codes.count(color) == 1) {
-                    user_color = color_codes[color];
-                    std::ofstream file("data/wdcolor.txt", std::ios::trunc);
-                    file << color;
+        } else if(cmd.starts_with("color")) { // Lets make a command to make this terminal a little bit customisable.
+            if(cmd.size() > 6) { // if there is something after "color"
+                std::string color = cmd.substr(6); // get that "thing"
+                if(color_codes.count(color) == 1) { // and if that "thing" is in the unordered map (it can only appear once)
+                    user_color = color_codes[color]; // then rewrite the variable to the ansii color code of the given color
+                    std::ofstream file("data/wdcolor.txt", std::ios::trunc); // open data/wdcolor.txt
+                    file << color; // save the data there
                 } else {
                     std::cout << "Color code invalid. Please type 'color' to see the color code list." << std::endl;
+                    // if it isn't found on the list however, then print this error.
                 }
-            } else {
-                std::cout << purple << "List of available colors:" << std::endl;
+            } else { // else if there is nothing after "color"
+                // display the list of available colors
+                std::cout << purple << "\nList of available colors:" << std::endl;
                 std::cout << blue << "color blue" << std::endl;
                 std::cout << red << "color red" << std::endl;
                 std::cout << black << "color black" << std::endl;
@@ -188,7 +201,33 @@ int main() {
                 std::cout << brown << "color brown" << std::endl;
                 std::cout << pink << "color pink" << std::endl;
                 std::cout << green << "color green" << std::endl;
-                std::cout << light_green << "color light_green" << reset_color << std::endl;
+                std::cout << light_green << "color light_green\n" << reset_color << std::endl;
+            }
+        } else if(cmd.starts_with("ctagc")) {
+            if (cmd.size() > 6) {
+                std::string givenColor = cmd.substr(6);
+                if (color_codes.count(givenColor) == 1) {
+                    ctag_color = color_codes[givenColor];
+                    std::ofstream file("data/ctagcolor.txt", std::ios::trunc);
+                    if(!file.is_open()) {
+                        std::cout << red << "[ERROR]" << reset_color << " Could not open data/ctagcolor.txt; please make sure the file exists in that directory." << std::endl;
+                    } else {
+                        file << givenColor;
+                        file.close();
+                    }
+                } else {
+                    std::cout << red << "[ERROR]" << reset_color << " color '" << givenColor << "' is invalid." << std::endl;
+                }
+            } else {
+                std::cout << purple << "\nList of available colors:" << std::endl;
+                std::cout << blue << "color blue" << std::endl;
+                std::cout << red << "color red" << std::endl;
+                std::cout << black << "color black" << std::endl;
+                std::cout << yellow << "color yellow" << std::endl;
+                std::cout << brown << "color brown" << std::endl;
+                std::cout << pink << "color pink" << std::endl;
+                std::cout << green << "color green" << std::endl;
+                std::cout << light_green << "color light_green\n" << reset_color << std::endl;
             }
         } else {
             std::string run_this = command + " 2>nul"; // "2>nul" tells windows to not print the error, so mine should print now.

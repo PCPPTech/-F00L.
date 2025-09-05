@@ -47,8 +47,11 @@ inline void printHelpMenu() {
     cout << green << "touch {file_name}" << reset_color << " - " << "create a file with the given name & prefix." << endl;
     cout << green << "rm {file_name}" << reset_color << " - " << "remove an existing file with the given name. (if doesn't already exist.)" << endl;
     cout << green << "mkdir {dir_name}" << reset_color << " - " << "create a directory with the given name. (if doesn't already exist.)" << endl;
-    cout << green << "deldir {dir_name}" << reset_color << "- " << "deletes a directory with the given name. Asks you again if folder isn't empty.\n" << endl;
-
+    cout << green << "deldir {dir_name}" << reset_color << " - " << "deletes a directory with the given name. Asks you again if folder isn't empty." << endl;
+    cout << green << "color" << reset_color << " - " << "Lists all available colors." << endl;
+    cout << green << "color {any_available_colors}" << reset_color << " - " << "changes your wd color to any color you'd like." << endl;
+    cout << green << "ctagc" << reset_color << " - " << "Lists all available colors for the [CONSOLE] tag." << endl;
+    cout << green << "ctagc {any_available_colors}" << reset_color << " - " << "changes your [CONSOLE] tag color to the given color." << endl;
 }
 
 inline void clearScreen() {
